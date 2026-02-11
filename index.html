@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contextual Icon Loader - AI-Powered Visual Context</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 226, 0.1) 0%, transparent 40%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 20px 120px;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+            font-weight: 300;
+        }
+
+        /* Status Badge */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .status-badge.loading {
+            background: rgba(255, 193, 7, 0.15);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            color: #ffc107;
+        }
+
+        .status-badge.ready {
+            background: rgba(76, 175, 80, 0.15);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            color: #4caf50;
+        }
+
+        .status-badge.fallback {
+            background: rgba(33, 150, 243, 0.15);
+            border: 1px solid rgba(33, 150, 243, 0.3);
+            color: #2196f3;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .status-badge.loading .status-dot {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 40px;
+            animation: fadeInUp 0.8s ease-out 0.1s both;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn span.material-icons {
+            font-size: 18px;
+        }
+
+        /* Content Cards */
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .content-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 28px;
+            transition: all 0.4s ease;
+            animation: fadeInUp 0.8s ease-out both;
+        }
+
+        .content-card:nth-child(1) { animation-delay: 0.1s; }
+        .content-card:nth-child(2) { animation-delay: 0.2s; }
+        .content-card:nth-child(3) { animation-delay: 0.3s; }
+        .content-card:nth-child(4) { animation-delay: 0.4s; }
+        .content-card:nth-child(5) { animation-delay: 0.5s; }
+
+        .content-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .content-card .icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+
+        .content-card:nth-child(1) .icon {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .content-card:nth-child(2) .icon {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        .content-card:nth-child(3) .icon {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        .content-card:nth-child(4) .icon {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+        .content-card:nth-child(5) .icon {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        .content-card .icon span {
+            font-size: 24px;
+            color: white;
+        }
+
+        .content-card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .content-card p {
+            color: rgba(255, 255, 255, 0.65);
+            line-height: 1.7;
+            font-size: 0.95rem;
+        }
+
+        /* Floating Icon Container */
+        .icon-loader-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 140px;
+            height: 140px;
+            background: rgba(15, 12, 41, 0.9);
+            border-radius: 24px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: floatIn 0.8s ease-out 0.6s both;
+        }
+
+        .icon-loader-container.position-left {
+            right: auto;
+            left: 30px;
+        }
+
+        .icon-loader-container.position-center {
+            right: auto;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        @keyframes floatIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        #iconCanvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Icon label */
+        .icon-label {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+            white-space: nowrap;
+            text-align: center;
+            width: 90%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 { font-size: 1.8rem; }
+            .content-grid { grid-template-columns: 1fr; }
+            .icon-loader-container {
+                width: 100px;
+                height: 100px;
+                bottom: 20px;
+                right: 20px;
+            }
+            .icon-loader-container.position-center {
+                left: 50%;
+                right: auto;
+            }
+            .icon-loader-container.position-left {
+                left: 20px;
+                right: auto;
+            }
+        }
+
+        /* Loading spinner for initial load */
+        .loading-spinner {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            z-index: 1000;
+        }
+
+        @keyframes spin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Contextual Icon Loader</h1>
+            <p class="subtitle">AI-powered abstract visualization that understands your content</p>
+            <div class="status-badge loading" id="statusBadge">
+                <span class="status-dot"></span>
+                <span id="statusText">Initializing AI Engine...</span>
+            </div>
+        </header>
+
+        <div class="controls">
+            <button class="btn btn-primary" onclick="loaders.triggerAnalysis()">
+                <span class="material-icons">psychology</span>
+                Analyze Content
+            </button>
+            <button class="btn btn-secondary" onclick="loaders.togglePosition()">
+                <span class="material-icons">flip</span>
+                Move Position
+            </button>
+            <button class="btn btn-secondary" onclick="loaders.toggleMode()">
+                <span class="material-icons">animation</span>
+                Change Animation
+            </button>
+        </div>
+
+        <div class="content-grid">
+            <div class="content-card" data-section="finance">
+                <div class="icon"><span class="material-icons">account_balance</span></div>
+                <h3>Financial Dashboard</h3>
+                <p>Monitor portfolio performance with real-time market data, stocks, bonds, and crypto analytics for wealth management.</p>
+            </div>
+
+            <div class="content-card" data-section="creative">
+                <div class="icon"><span class="material-icons">palette</span></div>
+                <h3>Creative Studio</h3>
+                <p>Unleash artistic vision with design tools for illustrations, photo manipulation, and visual storytelling.</p>
+            </div>
+
+            <div class="content-card" data-section="tech">
+                <div class="icon"><span class="material-icons">code</span></div>
+                <h3>Technology Hub</h3>
+                <p>Explore innovations in software development, cloud computing, and AI-powered digital infrastructure.</p>
+            </div>
+
+            <div class="content-card" data-section="nature">
+                <div class="icon"><span class="material-icons">nature</span></div>
+                <h3>Nature & Environment</h3>
+                <p>Discover ecosystems, conservation efforts, and sustainable practices for our planet's delicate balance.</p>
+            </div>
+
+            <div class="content-card" data-section="social">
+                <div class="icon"><span class="material-icons">groups</span></div>
+                <h3>Social Connections</h3>
+                <p>Build relationships and connect with communities through collaboration and mutual understanding.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Icon Container -->
+    <div class="icon-loader-container" id="loaderContainer">
+        <canvas id="iconCanvas" width="140" height="140"></canvas>
+        <div class="icon-label" id="iconLabel">AI Analysis</div>
+    </div>
+
+    <script type="module" src="loader.js?v=3"></script>
+</body>
+</html>
