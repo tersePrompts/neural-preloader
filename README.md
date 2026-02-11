@@ -20,7 +20,13 @@ Instead of boring spinners, what if loading screens had **mood**?
 
 ![Dramatic Mood](demo-dramatic.png)
 
-Try it live: **[ai-generator.html](https://terseprompts.github.io/neural-preloader/ai-generator.html)**
+> **To run the demo locally:**
+> ```bash
+> git clone https://github.com/tersePrompts/neural-preloader.git
+> cd neural-preloader
+> python -m http.server 8080
+> # Open http://localhost:8080/ai-generator.html
+> ```
 
 ## 🚀 Quick Start
 
