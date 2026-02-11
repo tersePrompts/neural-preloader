@@ -1,31 +1,37 @@
-# AI Preloaders - Scene Generator
+# 🧠 Neural Preloader
 
-A hobby project exploring client-side AI for generating contextual loading scenes using LLM.
+> AI-powered loading scenes with personality. Runs entirely in your browser.
 
-![Demo](demo.gif)
+![Demo](demo-funny-toast.png)
 
-> **Live Demo:** Open `ai-generator.html` in your browser
+Instead of boring spinners, what if loading screens had **mood**?
 
-## The Idea
+## ✨ Features
 
-Instead of boring spinners, loading screens that:
-- Use AI to generate contextual multi-icon scenes
-- Display quirky AI-generated text messages
-- Support 7 moods (Funny, Techie, Clumsy, Dramatic, Minimal, Cryptic, Enthusiastic)
-- 5 scene layouts (single, orbit, flow, stack, scatter)
+- **7 Mood Personalities** - Funny, Techie, Clumsy, Dramatic, Minimal, Cryptic, Enthusiastic
+- **5 Scene Layouts** - single, orbit, flow, stack, scatter
+- **LLM-Generated Text** - GPT-2 runs client-side via Transformers.js
+- **Toast Notifications** - Visual feedback for every interaction
+- **MAX Temperature** - 1.5-2.5 for experimental, varied output
+- **1000+ Icons** - Material Icons selected intelligently
+- **Zero API Keys** - Everything runs in-browser, no server needed
 
-## Quick Start
+## 🎬 Demo
+
+![Dramatic Mood](demo-dramatic.png)
+
+Try it live: **[ai-generator.html](https://terseprompts.github.io/neural-preloader/ai-generator.html)**
+
+## 🚀 Quick Start
 
 ```bash
-# Clone and run
-git clone <repo>
-cd ai-preloaders
+git clone https://github.com/tersePrompts/neural-preloader.git
+cd neural-preloader
 python -m http.server 8080
-
 # Open http://localhost:8080/ai-generator.html
 ```
 
-## Use as a Preloader in Your Project
+## 📦 Use as a Preloader
 
 ```html
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -40,19 +46,47 @@ python -m http.server 8080
   });
 
   // Show during loading
-  preloader.show('Verifying credentials...', 'techie');
+  preloader.show('Verifying credentials...', 'dramatic');
 
   // Hide when done
   preloader.hide();
 </script>
 ```
 
-## API
+## 🎭 Mood Gallery
+
+| Mood | Vibe | Example Text |
+|------|------|--------------|
+| 😄 **Funny** | Witty, playful | "Herding cats", "Bribing the server" |
+| 💻 **Techie** | Technical, futuristic | "Allocating memory", "Spinning containers" |
+| 😅 **Clumsy** | Self-deprecating | "Tripping over wires", "Dropping packets" |
+| 🎭 **Dramatic** | Theatrical, epic | "The suspense builds", "Destiny awaits" |
+| ✨ **Minimal** | Clean, simple | "Processing", "Loading", "Working" |
+| 🔮 **Cryptic** | Mysterious, vague | "The path unfolds", "Shadows whisper" |
+| 🎉 **Enthusiastic** | Excited, energetic | "Let's go!", "Crushing it!" |
+
+## 🎨 Scene Types
+
+```
+┌─────────┐  ┌──────────────────┐  ┌─────────────────────┐
+│   ●    │  │      ○  ●  ○     │  │    ○ → ● → ○       │
+│  spin  │  │     orbit        │  │      flow          │
+└─────────┘  └──────────────────┘  └─────────────────────┘
+
+┌─────────┐  ┌──────────────────┐
+│    ●    │  │      ○  ○        │
+│    ○    │  │    ○   ●   ○     │
+│    ○    │  │     scatter      │
+│  stack  │  └──────────────────┘
+└─────────┘
+```
+
+## 🔧 API
 
 ```javascript
 // Initialize with options
 await init({
-  container: document.getElementById('preloader'), // optional, auto-creates overlay
+  container: document.getElementById('preloader'), // optional
   status: 'Loading...',
   mood: 'techie',           // funny, techie, clumsy, dramatic, minimal, cryptic, enthusiastic
   autoGenerate: true
@@ -68,25 +102,30 @@ hide();
 setMood('enthusiastic');
 ```
 
-## How It Works
+## 🧠 How It Works
 
 1. **Transformers.js** runs GPT-2 entirely in the browser
 2. **MAX temperature** (1.5-2.5) for experimental output
-3. **Mood-based prompts** for text generation
-4. Fallback to keyword matching if LLM unavailable
+3. **Mood-based prompts** shape the text generation
+4. **Icon categories** provide context-aware selections
+5. Falls back gracefully if LLM unavailable
 
-## Tech Stack
+## 📦 Tech Stack
 
 - Vanilla JS (ES6 modules)
-- Transformers.js (Xenova/gpt2)
-- Material Icons
+- [Transformers.js](https://huggingface.co/docs/transformers.js) (Xenova/gpt2)
+- Material Icons (Google)
 
-## Notes
+## 📝 Notes
 
 - First load downloads LLM model (~234MB) - cached after
-- Falls back gracefully if LLM fails
+- Falls back to keyword matching if LLM fails
 - This is a fun experiment, not production code
 
-## License
+## 📄 License
 
 MIT
+
+---
+
+Made with 🧠 by [tersePrompts](https://github.com/tersePrompts)
